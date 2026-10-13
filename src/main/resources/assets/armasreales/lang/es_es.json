@@ -8,5 +8,6 @@
   "item.armasreales.rifle_plasma": "Rifle de plasma",
   "entity.armasreales.proyectil_tnt": "Proyectil de TNT",
   "entity.armasreales.proyectil_bengala": "Bengala",
-  "message.armasreales.sobrecalentado": "¡Sobrecalentado!"
+  "message.armasreales.sobrecalentado": "¡Sobrecalentado!",
+  "entity.armasreales.rayo": "Rayo"
 }

@@ -8,5 +8,6 @@
   "item.armasreales.rifle_plasma": "Plasma Rifle",
   "entity.armasreales.proyectil_tnt": "TNT Projectile",
   "entity.armasreales.proyectil_bengala": "Flare",
-  "message.armasreales.sobrecalentado": "Overheated!"
+  "message.armasreales.sobrecalentado": "Overheated!",
+  "entity.armasreales.rayo": "Beam"
 }

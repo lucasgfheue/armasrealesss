@@ -40,6 +40,11 @@ public class FlareGunItem extends Item {
 
         if (!level.isClientSide) {
             FlareProjectile flare = new FlareProjectile(level, player);
+            // La caja de colisión mide 1x1: la centramos a la altura de los ojos, un poco adelante
+            net.minecraft.world.phys.Vec3 look = player.getLookAngle();
+            flare.setPos(player.getX() + look.x * 0.8,
+                    player.getEyeY() - 0.6 + look.y * 0.8,
+                    player.getZ() + look.z * 0.8);
             flare.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0f, SPEED, 0.4f);
             level.addFreshEntity(flare);
 

@@ -14,8 +14,10 @@ public class ClientSetup {
         event.registerEntityRenderer(ModEntities.TNT_PROJECTILE.get(),
                 context -> new ThrownItemRenderer<>(context, 2.0F, false));
 
-        // Bengala: bola de fuego gigante (x3,5) que se dibuja a máximo brillo
-        event.registerEntityRenderer(ModEntities.FLARE_PROJECTILE.get(),
-                context -> new ThrownItemRenderer<>(context, 3.5F, true));
+        // Bengala: bola de fuego gigante con halo brillante
+        event.registerEntityRenderer(ModEntities.FLARE_PROJECTILE.get(), FlareRenderer::new);
+
+        // Rayos del láser y del plasma
+        event.registerEntityRenderer(ModEntities.BEAM.get(), BeamRenderer::new);
     }
 }

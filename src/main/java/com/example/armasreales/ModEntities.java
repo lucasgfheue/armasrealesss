@@ -25,4 +25,14 @@ public class ModEntities {
                             .clientTrackingRange(8)
                             .updateInterval(2)
                             .build("proyectil_bengala"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BeamEntity>> BEAM =
+            ENTITIES.register("rayo", () ->
+                    EntityType.Builder.<BeamEntity>of(BeamEntity::new, MobCategory.MISC)
+                            .sized(0.1f, 0.1f)
+                            .clientTrackingRange(10)
+                            .updateInterval(1)
+                            .noSave()
+                            .noSummon()
+                            .build("rayo"));
 }

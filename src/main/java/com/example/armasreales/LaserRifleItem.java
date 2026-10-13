@@ -40,8 +40,6 @@ public class LaserRifleItem extends Item {
     private static final int DAMAGE_INTERVAL = 4;    // cada cuántos ticks hace daño
     private static final float DAMAGE = 2.0f;        // daño por golpe (1 corazón)
 
-    private static final DustParticleOptions RED_DUST =
-            new DustParticleOptions(new Vector3f(1.0f, 0.05f, 0.05f), 1.0f);
 
     public LaserRifleItem(Properties properties) {
         super(properties);
@@ -155,13 +153,8 @@ public class LaserRifleItem extends Item {
             level.sendParticles(ParticleTypes.FLAME, end.x, end.y, end.z, 2, 0.05, 0.05, 0.05, 0.01);
         }
 
-        // Dibujo del rayo rojo con partículas
-        Vec3 origin = eye.add(look.scale(0.9)).add(0.0, -0.18, 0.0);
-        double dist = origin.distanceTo(end);
-        for (double d = 0.0; d < dist; d += 0.5) {
-            Vec3 p = origin.add(look.scale(d));
-            level.sendParticles(RED_DUST, p.x, p.y, p.z, 1, 0.0, 0.0, 0.0, 0.0);
-        }
+        // El rayo continuo lo dibuja BeamEntity en el cliente (línea roja brillante)
+        BeamEntity.update(level, player, BeamEntity.STYLE_LASER, (float) eye.distanceTo(end));
 
         if (elapsed % 10 == 0) {
             level.playSound(null, player.blockPosition(), SoundEvents.BEACON_AMBIENT,

@@ -41,8 +41,6 @@ public class PlasmaRifleItem extends Item {
     private static final double CHAIN_RADIUS = 4.5;      // radio de la descarga
     private static final int MAX_CHAIN_TARGETS = 6;
 
-    private static final DustParticleOptions PLASMA_DUST =
-            new DustParticleOptions(new Vector3f(0.25f, 0.75f, 1.0f), 1.3f);
     private static final Predicate<Entity> TARGETS =
             e -> e instanceof LivingEntity && e.isAlive() && !e.isSpectator();
 
@@ -183,11 +181,7 @@ public class PlasmaRifleItem extends Item {
 
         // Dibujo del rayo de plasma
         Vec3 origin = eye.add(look.scale(0.9)).add(0.0, -0.18, 0.0);
-        double dist = origin.distanceTo(end);
-        for (double d = 0.0; d < dist; d += 0.5) {
-            Vec3 p = origin.add(look.scale(d));
-            level.sendParticles(PLASMA_DUST, p.x, p.y, p.z, 1, 0.05, 0.05, 0.05, 0.0);
-        }
+        BeamEntity.update(level, player, BeamEntity.STYLE_PLASMA, (float) eye.distanceTo(end));
         level.sendParticles(ParticleTypes.ELECTRIC_SPARK, end.x, end.y, end.z, 3, 0.15, 0.15, 0.15, 0.05);
 
         // Avisos de que se está calentando (últimos 1,5 s)
