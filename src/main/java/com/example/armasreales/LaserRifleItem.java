@@ -78,7 +78,7 @@ public class LaserRifleItem extends Item {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return 72000;
     }
 
@@ -93,7 +93,7 @@ public class LaserRifleItem extends Item {
             return;
         }
 
-        int elapsed = getUseDuration(stack) - remainingUseDuration;
+        int elapsed = getUseDuration(stack, entity) - remainingUseDuration;
         if (elapsed > MAX_BEAM_TICKS) {
             player.releaseUsingItem(); // fin de la ráfaga -> releaseUsing aplica el recalentamiento
             return;
