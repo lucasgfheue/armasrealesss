@@ -1371,11 +1371,11 @@
       "rotation": [
         0,
         90,
-        0
+        90
       ],
       "translation": [
         0,
-        1,
+        0,
         0
       ],
       "scale": [
@@ -1388,11 +1388,11 @@
       "rotation": [
         0,
         90,
-        0
+        90
       ],
       "translation": [
         0,
-        1,
+        0,
         0
       ],
       "scale": [
@@ -1486,5 +1486,13 @@
         0.528
       ]
     }
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "armasreales:aiming": 1.0
+      },
+      "model": "armasreales:item/rifle_laser_aim"
+    }
+  ]
 }

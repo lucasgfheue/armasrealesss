@@ -32,7 +32,7 @@ import java.util.Optional;
  * Atraviesa entidades (daño continuo + fuego); se detiene en bloques y convierte la arena en vidrio.
  */
 public class LaserRifleItem extends Item implements Gun {
-    private static final double RANGE = 120.0;
+    private static final double RANGE = 240.0;
     private static final int MAX_BEAM_TICKS = 80;     // 4 s
     private static final int COOLDOWN_TICKS = 60;     // 3 s de recalentamiento
     private static final int DAMAGE_INTERVAL = 4;
