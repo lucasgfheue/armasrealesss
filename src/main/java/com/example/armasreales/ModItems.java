@@ -32,4 +32,14 @@ public class ModItems {
             "lanzador_tnt",
             TntLauncherItem::new,
             new Item.Properties().stacksTo(1).durability(150));
+
+    public static final DeferredItem<FlareGunItem> PISTOLA_BENGALAS = ITEMS.registerItem(
+            "pistola_bengalas",
+            FlareGunItem::new,
+            new Item.Properties().stacksTo(1).durability(120));
+
+    public static final DeferredItem<PlasmaRifleItem> RIFLE_PLASMA = ITEMS.registerItem(
+            "rifle_plasma",
+            PlasmaRifleItem::new,
+            new Item.Properties().stacksTo(1).durability(300));
 }

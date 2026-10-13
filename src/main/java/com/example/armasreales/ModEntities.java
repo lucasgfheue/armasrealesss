@@ -17,4 +17,12 @@ public class ModEntities {
                             .clientTrackingRange(4)
                             .updateInterval(10)
                             .build("proyectil_tnt"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<FlareProjectile>> FLARE_PROJECTILE =
+            ENTITIES.register("proyectil_bengala", () ->
+                    EntityType.Builder.<FlareProjectile>of(FlareProjectile::new, MobCategory.MISC)
+                            .sized(1.0f, 1.0f)
+                            .clientTrackingRange(8)
+                            .updateInterval(2)
+                            .build("proyectil_bengala"));
 }

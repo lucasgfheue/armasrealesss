@@ -22,6 +22,8 @@ public class ArmasRealesMod {
             event.accept(ModItems.RIFLE_LASER);
             event.accept(ModItems.CELDA_ENERGIA);
             event.accept(ModItems.LANZADOR_TNT);
+            event.accept(ModItems.PISTOLA_BENGALAS);
+            event.accept(ModItems.RIFLE_PLASMA);
         }
     }
 }

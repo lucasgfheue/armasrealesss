@@ -4,5 +4,9 @@
   "item.armasreales.rifle_laser": "Rifle láser",
   "item.armasreales.celda_energia": "Celda de energía",
   "item.armasreales.lanzador_tnt": "Lanzador de TNT",
-  "entity.armasreales.proyectil_tnt": "Proyectil de TNT"
+  "item.armasreales.pistola_bengalas": "Pistola de bengalas",
+  "item.armasreales.rifle_plasma": "Rifle de plasma",
+  "entity.armasreales.proyectil_tnt": "Proyectil de TNT",
+  "entity.armasreales.proyectil_bengala": "Bengala",
+  "message.armasreales.sobrecalentado": "¡Sobrecalentado!"
 }

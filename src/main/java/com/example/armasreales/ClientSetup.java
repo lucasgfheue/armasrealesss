@@ -10,8 +10,12 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 public class ClientSetup {
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        // El proyectil se dibuja como un bloque de TNT (tamaño x2)
+        // TNT: bloque de TNT (tamaño x2)
         event.registerEntityRenderer(ModEntities.TNT_PROJECTILE.get(),
                 context -> new ThrownItemRenderer<>(context, 2.0F, false));
+
+        // Bengala: bola de fuego gigante (x3,5) que se dibuja a máximo brillo
+        event.registerEntityRenderer(ModEntities.FLARE_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 3.5F, true));
     }
 }
