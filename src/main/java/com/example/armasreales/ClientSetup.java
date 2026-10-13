@@ -1,6 +1,12 @@
 package com.example.armasreales;
 
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -19,5 +25,18 @@ public class ClientSetup {
 
         // Rayos del láser y del plasma
         event.registerEntityRenderer(ModEntities.BEAM.get(), BeamRenderer::new);
+    }
+
+    /** Los brazos se levantan al frente, como al sostener una ballesta: se ve que sostiene el arma. */
+    @SubscribeEvent
+    public static void registerExtensions(RegisterClientExtensionsEvent event) {
+        IClientItemExtensions holdGun = new IClientItemExtensions() {
+            @Override
+            public HumanoidModel.ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack stack) {
+                return HumanoidModel.ArmPose.CROSSBOW_HOLD;
+            }
+        };
+        event.registerItem(holdGun, ModItems.PISTOLA.get(), ModItems.RIFLE_LASER.get(),
+                ModItems.LANZADOR_TNT.get(), ModItems.PISTOLA_BENGALAS.get(), ModItems.RIFLE_PLASMA.get());
     }
 }

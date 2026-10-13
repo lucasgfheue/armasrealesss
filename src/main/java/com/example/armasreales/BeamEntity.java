@@ -58,10 +58,8 @@ public class BeamEntity extends Entity {
             return;
         }
         Entity owner = this.level().getEntity(this.getOwnerId());
-        boolean valid = owner instanceof Player player
-                && player.isUsingItem()
-                && (player.getUseItem().getItem() instanceof LaserRifleItem
-                    || player.getUseItem().getItem() instanceof PlasmaRifleItem);
+        boolean valid = owner instanceof net.minecraft.server.level.ServerPlayer player
+                && GunControl.isActive(player);
         if (!valid) {
             ACTIVE.values().removeIf(b -> b == this);
             this.discard();

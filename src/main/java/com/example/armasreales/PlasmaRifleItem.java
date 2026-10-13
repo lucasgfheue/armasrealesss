@@ -1,14 +1,15 @@
 package com.example.armasreales;
 
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -20,25 +21,22 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
- * Rifle de plasma: mantén clic derecho para disparar un rayo continuo durante 6 segundos,
- * después se sobrecalienta. El rayo golpea a la primera entidad que toque y la descarga
- * "eléctrica" salta a las entidades que estén a su alrededor.
- * Consume 1 Celda de energía por ráfaga.
+ * Rifle de plasma: clic derecho apunta (zoom), clic izquierdo mantenido = rayo de 6 s y sobrecalentamiento.
+ * El rayo golpea a la primera entidad y la descarga eléctrica salta a las cercanas.
  */
-public class PlasmaRifleItem extends Item {
-    private static final double RANGE = 26.0;
-    private static final int MAX_BEAM_TICKS = 120;       // 6 segundos
-    private static final int MAX_COOLDOWN_TICKS = 200;   // sobrecalentamiento: 10 segundos
-    private static final int DAMAGE_INTERVAL = 5;        // cada cuántos ticks golpea
-    private static final float DAMAGE = 3.0f;            // golpe directo
-    private static final float CHAIN_DAMAGE = 2.0f;      // golpe de la descarga a los cercanos
-    private static final double CHAIN_RADIUS = 4.5;      // radio de la descarga
+public class PlasmaRifleItem extends Item implements Gun {
+    private static final double RANGE = 100.0;
+    private static final int MAX_BEAM_TICKS = 120;       // 6 s
+    private static final int MAX_COOLDOWN_TICKS = 200;   // 10 s
+    private static final int DAMAGE_INTERVAL = 5;
+    private static final float DAMAGE = 3.0f;
+    private static final float CHAIN_DAMAGE = 2.0f;
+    private static final double CHAIN_RADIUS = 4.5;
     private static final int MAX_CHAIN_TARGETS = 6;
 
     private static final Predicate<Entity> TARGETS =
@@ -50,32 +48,8 @@ public class PlasmaRifleItem extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack gun = player.getItemInHand(hand);
-
-        if (player.getCooldowns().isOnCooldown(this)) {
-            return InteractionResultHolder.fail(gun);
-        }
-
-        boolean creative = player.getAbilities().instabuild;
-        ItemStack cell = AmmoUtil.find(player, ModItems.CELDA_ENERGIA.get());
-
-        if (cell.isEmpty() && !creative) {
-            level.playSound(null, player.blockPosition(), SoundEvents.DISPENSER_FAIL,
-                    SoundSource.PLAYERS, 1.0f, 1.4f);
-            player.getCooldowns().addCooldown(this, 10);
-            return InteractionResultHolder.fail(gun);
-        }
-
-        if (!level.isClientSide) {
-            if (!creative) {
-                cell.shrink(1);
-            }
-            level.playSound(null, player.blockPosition(), SoundEvents.BEACON_ACTIVATE,
-                    SoundSource.PLAYERS, 0.8f, 1.3f);
-        }
-
         player.startUsingItem(hand);
-        return InteractionResultHolder.consume(gun);
+        return InteractionResultHolder.consume(player.getItemInHand(hand));
     }
 
     @Override
@@ -89,33 +63,50 @@ public class PlasmaRifleItem extends Item {
     }
 
     @Override
-    public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int remainingUseDuration) {
-        if (!(level instanceof ServerLevel serverLevel) || !(entity instanceof Player player)) {
-            return;
-        }
-
-        int elapsed = getUseDuration(stack, entity) - remainingUseDuration;
-
-        if (elapsed >= MAX_BEAM_TICKS) {
-            overheat(serverLevel, player);
-            player.releaseUsingItem();
-            return;
-        }
-
-        fireBeam(serverLevel, player, elapsed);
-
-        if (elapsed % 20 == 0 && !player.getAbilities().instabuild) {
-            stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
-        }
+    public float aimZoom() {
+        return 0.6f;
     }
 
     @Override
-    public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeCharged) {
-        if (entity instanceof Player player) {
-            int used = getUseDuration(stack, entity) - timeCharged;
-            int cooldown = Math.min(MAX_COOLDOWN_TICKS, 20 + used * 3 / 2);
-            player.getCooldowns().addCooldown(this, cooldown);
+    public boolean onFirePressed(ServerPlayer player, ItemStack gun) {
+        if (player.getCooldowns().isOnCooldown(this)) {
+            return false;
         }
+        boolean creative = player.getAbilities().instabuild;
+        ItemStack cell = AmmoUtil.find(player, ModItems.CELDA_ENERGIA.get());
+
+        if (cell.isEmpty() && !creative) {
+            player.level().playSound(null, player.blockPosition(), SoundEvents.DISPENSER_FAIL,
+                    SoundSource.PLAYERS, 1.0f, 1.4f);
+            player.getCooldowns().addCooldown(this, 10);
+            return false;
+        }
+        if (!creative) {
+            cell.shrink(1);
+        }
+        player.level().playSound(null, player.blockPosition(), SoundEvents.BEACON_ACTIVATE,
+                SoundSource.PLAYERS, 0.8f, 1.3f);
+        return true;
+    }
+
+    @Override
+    public boolean onFireHeld(ServerPlayer player, ItemStack gun, int heldTicks) {
+        ServerLevel level = player.serverLevel();
+        if (heldTicks >= MAX_BEAM_TICKS) {
+            overheat(level, player);
+            return false;
+        }
+        fireBeam(level, player, heldTicks);
+        if (heldTicks % 20 == 0 && !player.getAbilities().instabuild) {
+            gun.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
+        }
+        return true;
+    }
+
+    @Override
+    public void onFireStopped(ServerPlayer player, ItemStack gun, int heldTicks) {
+        int cooldown = Math.min(MAX_COOLDOWN_TICKS, 20 + heldTicks * 3 / 2);
+        player.getCooldowns().addCooldown(this, cooldown);
     }
 
     private void overheat(ServerLevel level, Player player) {
@@ -132,14 +123,12 @@ public class PlasmaRifleItem extends Item {
         Vec3 look = player.getLookAngle();
         Vec3 end = eye.add(look.scale(RANGE));
 
-        // Primero, el bloque más cercano
         BlockHitResult blockHit = level.clip(new ClipContext(
                 eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
         if (blockHit.getType() != HitResult.Type.MISS) {
             end = blockHit.getLocation();
         }
 
-        // Luego, la primera entidad que el rayo toque antes de ese bloque
         Entity primary = null;
         Vec3 primaryHit = null;
         double best = Double.MAX_VALUE;
@@ -159,7 +148,6 @@ public class PlasmaRifleItem extends Item {
             end = primaryHit;
         }
 
-        // Golpe directo + descarga eléctrica a las entidades de alrededor
         if (primary != null && elapsed % DAMAGE_INTERVAL == 0) {
             zap(level, player, primary, DAMAGE);
 
@@ -174,21 +162,17 @@ public class PlasmaRifleItem extends Item {
                 zap(level, player, other, CHAIN_DAMAGE);
                 drawArc(level, center, other.getBoundingBox().getCenter());
             }
-
             level.playSound(null, primary.blockPosition(), SoundEvents.LIGHTNING_BOLT_IMPACT,
                     SoundSource.PLAYERS, 0.2f, 2.0f);
         }
 
-        // Dibujo del rayo de plasma
-        Vec3 origin = eye.add(look.scale(0.9)).add(0.0, -0.18, 0.0);
         BeamEntity.update(level, player, BeamEntity.STYLE_PLASMA, (float) eye.distanceTo(end));
         level.sendParticles(ParticleTypes.ELECTRIC_SPARK, end.x, end.y, end.z, 3, 0.15, 0.15, 0.15, 0.05);
 
-        // Avisos de que se está calentando (últimos 1,5 s)
+        Vec3 origin = eye.add(look.scale(0.9)).add(0.0, -0.18, 0.0);
         if (elapsed > MAX_BEAM_TICKS - 30 && elapsed % 3 == 0) {
             level.sendParticles(ParticleTypes.SMOKE, origin.x, origin.y, origin.z, 2, 0.05, 0.05, 0.05, 0.01);
         }
-
         if (elapsed % 10 == 0) {
             level.playSound(null, player.blockPosition(), SoundEvents.BEACON_AMBIENT,
                     SoundSource.PLAYERS, 0.5f, 1.4f);
@@ -200,7 +184,6 @@ public class PlasmaRifleItem extends Item {
         target.hurt(level.damageSources().playerAttack(player), damage);
     }
 
-    /** Dibuja un arco eléctrico irregular entre dos puntos. */
     private void drawArc(ServerLevel level, Vec3 from, Vec3 to) {
         Vec3 delta = to.subtract(from);
         int steps = Math.max(2, (int) (delta.length() / 0.4));
