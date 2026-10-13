@@ -17,4 +17,19 @@ public class ModItems {
             "municion_pistola",
             Item::new,
             new Item.Properties());
+
+    public static final DeferredItem<LaserRifleItem> RIFLE_LASER = ITEMS.registerItem(
+            "rifle_laser",
+            LaserRifleItem::new,
+            new Item.Properties().stacksTo(1).durability(400));
+
+    public static final DeferredItem<Item> CELDA_ENERGIA = ITEMS.registerItem(
+            "celda_energia",
+            Item::new,
+            new Item.Properties());
+
+    public static final DeferredItem<TntLauncherItem> LANZADOR_TNT = ITEMS.registerItem(
+            "lanzador_tnt",
+            TntLauncherItem::new,
+            new Item.Properties().stacksTo(1).durability(150));
 }

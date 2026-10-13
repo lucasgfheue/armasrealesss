@@ -1,4 +1,8 @@
 {
   "item.armasreales.pistola": "Pistol",
-  "item.armasreales.municion_pistola": "Pistol Ammo"
+  "item.armasreales.municion_pistola": "Pistol Ammo",
+  "item.armasreales.rifle_laser": "Laser Rifle",
+  "item.armasreales.celda_energia": "Energy Cell",
+  "item.armasreales.lanzador_tnt": "TNT Launcher",
+  "entity.armasreales.proyectil_tnt": "TNT Projectile"
 }

@@ -11,6 +11,7 @@ public class ArmasRealesMod {
 
     public ArmasRealesMod(IEventBus modBus) {
         ModItems.ITEMS.register(modBus);
+        ModEntities.ENTITIES.register(modBus);
         modBus.addListener(this::addToCreativeTabs);
     }
 
@@ -18,6 +19,9 @@ public class ArmasRealesMod {
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.PISTOLA);
             event.accept(ModItems.MUNICION_PISTOLA);
+            event.accept(ModItems.RIFLE_LASER);
+            event.accept(ModItems.CELDA_ENERGIA);
+            event.accept(ModItems.LANZADOR_TNT);
         }
     }
 }
